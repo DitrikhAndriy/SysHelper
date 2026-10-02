@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+.venv/
+build/
+dist/
+*.spec
+
+# Local settings and credentials
+.vscode/
+.idea/
+.codex/
+.env
+.env.*
+!.env.example
+
+# Diagnostic reports may contain computer names, domains and serial numbers
+reports/
+SysHelper-*.txt
+logs/
+*.log
+
+# Tool caches
+.pytest_cache/
+.ruff_cache/

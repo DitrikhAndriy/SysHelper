@@ -1,0 +1,1 @@
+# No third-party runtime dependencies. Uses Python's standard library and tkinter.
