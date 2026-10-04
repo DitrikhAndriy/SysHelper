@@ -2,18 +2,23 @@
 
 Minimal Windows PC diagnostics in Python, with an English interface.
 
-- **Overview:** computer identity, domain/workgroup, OS and installed components.
-- **Hardware:** CPU/RAM/GPU readings, disk space, available storage counters and power status.
-- **Drivers, Network, Devices, System:** planned.
-- **Temperatures and voltages:** placeholders for future development.
+| Category | Available information |
+| --- | --- |
+| Overview | Computer identity, domain/workgroup, Windows and installed components |
+| Hardware | CPU/RAM/GPU readings, disk space, storage counters and power status |
+| Network | IP/masks, MAC, DHCP/leases, DNS, profiles, traffic and connection checks |
+| Drivers | Present device problems, driver versions, providers, dates, INF and reported signatures |
 
-Run check updates only the selected category. Show details expands its report.
-Select text and press Ctrl+C to copy. Save report exports the current category
-or all collected reports. Some readings depend on device support and permissions.
+Devices and System are planned. Temperatures and voltages remain placeholders.
+
+**Run check** updates only the selected category. **Show details** expands its
+report. Select text and press **Ctrl+C** to copy. **Save report** exports the
+current category or all previously collected reports.
 
 ## Run and test
 
-Use Windows and Python 3.10+ with tkinter. No third-party runtime packages are required.
+Requires Windows and Python 3.10+ with tkinter. Uses built-in Windows
+PowerShell; no third-party Python runtime packages are needed.
 
 ```powershell
 py main.py
@@ -27,25 +32,33 @@ py -m pip install -r requirements-build.txt
 .\scripts\build.ps1
 ```
 
-Output: `dist\SysHelper.exe`. Python is bundled; the destination PC does not
-need it installed. The EXE build must run on Windows.
+Output: `dist\SysHelper.exe`. Build on Windows; the destination PC does not
+need Python installed. EXE packaging has not yet been validated.
 
 ## Structure
 
-```text
-main.py                    Entry point
-syshelper/
-    ui.py                  Window and controls
-    sections/              Category reports
-    collectors/            Windows data collection
-    report_utils.py        Text formatting
-    reports.py             Report export
-tests/                    Tests with synthetic data
-scripts/build.ps1          EXE build
-requirements.txt           Runtime dependencies (none)
-requirements-build.txt     Build dependencies
-```
+- `main.py`: entry point; `syshelper/ui.py`: window and controls.
+- `syshelper/sections/`: separate report formatters for each category.
+- `syshelper/collectors/`: category collectors, network probes and Windows helpers.
+- `syshelper/report_utils.py` and `reports.py`: shared formatting and export.
+- `tests/`: synthetic fixtures; `scripts/build.ps1`: EXE build.
 
-Saved reports can contain PC names, domains and serial numbers. Keep them in
-`reports/` or use the default `SysHelper-*.txt` names; both are ignored by Git.
-Tests contain synthetic values. Source files do not store collected computer data.
+## Diagnostic notes
+
+Network sends test requests to `www.msftconnecttest.com`, each configured DNS
+resolver on active adapters, and the standard IPv4 resolver pairs from
+[Cloudflare](https://developers.cloudflare.com/1.1.1.1/ip-addresses/),
+[Google](https://developers.google.com/speed/public-dns/docs/using) and
+[Quad9](https://docs.quad9.net/services/). It also tests TCP to `1.1.1.1:443`
+and four ICMP samples to `1.1.1.1` and up to four gateways. Results describe
+this PC's connection; blocked probes do not prove a service outage.
+
+Drivers reads local Windows data without installing drivers or checking for
+updates. Driver dates are package dates, not installation times. Signatures
+are reported by WMI, not independently verified. Some readings depend on
+hardware support and permissions.
+
+Collected data stays in memory until you choose to save a report. Reports can
+contain host names, domains, IP/MAC addresses, serial numbers and device IDs.
+Use `reports/` or the default `SysHelper-*.txt` names; both are ignored by Git.
+Tests use synthetic data; source files do not store collected PC information.

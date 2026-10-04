@@ -1,1 +1,2 @@
-# No third-party runtime dependencies. Uses Python's standard library and tkinter.
+# Runtime: Windows, Python 3.10+ with tkinter and built-in Windows PowerShell.
+# No third-party Python packages are required.

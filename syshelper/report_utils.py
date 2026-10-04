@@ -17,6 +17,11 @@ def row(label, item):
     return f"{label:<14}{' ' if len(label) >= 14 else ''}{value(item)}"
 
 
+def aligned_row(label, item):
+    """Wider alignment for Network and Drivers' longer field names."""
+    return f"{label:<16} {value(item)}"
+
+
 def block(title, rows):
     return title + "\n" + "\n".join(rows)
 

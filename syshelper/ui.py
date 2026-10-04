@@ -9,10 +9,16 @@ from tkinter import filedialog, messagebox, ttk
 from .sections.hardware import format_hardware
 from .collectors.inventory import collect_snapshot
 from .sections.overview import format_overview
+from .collectors.network import collect_network_snapshot
+from .sections.network import format_network
+from .collectors.drivers import collect_drivers_snapshot
+from .sections.drivers import format_drivers
 from .reports import export_text
 
 
 SECTIONS = ("Overview", "Hardware", "Drivers", "Network", "Devices", "System")
+FORMATTERS = {"Overview": format_overview, "Hardware": format_hardware,
+              "Drivers": format_drivers, "Network": format_network}
 
 
 class SysHelperApp(tk.Tk):
@@ -154,7 +160,7 @@ class SysHelperApp(tk.Tk):
         self.output.configure(state="disabled")
 
     def run_check(self):
-        if self.section in ("Overview", "Hardware"):
+        if self.section in FORMATTERS:
             if self.section in self.pending:
                 return
             section = self.section
@@ -172,10 +178,11 @@ class SysHelperApp(tk.Tk):
     def _collect_report(self, section):
         timestamp = datetime.now().astimezone().isoformat(timespec="seconds")
         try:
-            data = collect_snapshot(section)
+            collector = {"Network": collect_network_snapshot,
+                         "Drivers": collect_drivers_snapshot}.get(section)
+            data = collector() if collector else collect_snapshot(section)
             timestamp = datetime.fromisoformat(data["CollectedAt"]).isoformat(timespec="seconds")
-            formatter = {"Overview": format_overview, "Hardware": format_hardware}[section]
-            report = formatter(data)
+            report = FORMATTERS[section](data)
             status = ""
         except Exception as error:
             report = ("[UNAVAILABLE] See details.",
